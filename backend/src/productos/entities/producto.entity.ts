@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { AjusteInventario } from '../../ajustes_inventario/entities/ajuste_inventario.entity';
 
-@Entity('producto', { schema: 'public' })
+@Entity('producto')
 export class Producto {
   @PrimaryGeneratedColumn({ name: 'id_producto' })
   id: number;

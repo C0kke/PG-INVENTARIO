@@ -14,9 +14,5 @@ export class UpdateAjustesInventarioDto extends PartialType(CreateAjustesInventa
 
 	@IsOptional()
 	@IsInt()
-	empleadoId?: number;
-
-	@IsOptional()
-	@IsInt()
 	productoId?: number;
 }

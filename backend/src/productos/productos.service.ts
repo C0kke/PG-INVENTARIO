@@ -9,27 +9,51 @@ import { InjectRepository } from '@nestjs/typeorm';
 @Injectable()
 export class ProductosService {
   constructor(
-    @InjectRepository(Producto)
+    // @InjectRepository(Producto)
     private readonly productoRepository: Repository<Producto>,
     @InjectRepository(SolicitudProducto)
     private readonly solicitudProductoRepository: Repository<SolicitudProducto>,
-  ) {}
-  
+  ) { }
+
+  /**
+   * Crea un nuevo registro
+   * @param createProductoDto los datos para crear
+   * @returns el objeto guardado
+   */
   async create(createProductoDto: CreateProductoDto) {
     try {
+      // Creamos la solicitud
       const solicitud = this.solicitudProductoRepository.create({
         nombre: createProductoDto.nombre,
         descripcion: createProductoDto.descripcion,
-        estado_solicitud: createProductoDto.estado,
+        estado_solicitud: true,
       });
+      // Guardamos en la base de datos
       return await this.solicitudProductoRepository.save(solicitud);
     } catch (error) {
-      console.error('Error al crear solicitud de producto:', error);
-      throw error;
+      // Si hay error lo mostramos
+      console.error('Error:', error);
+      throw new Error("Generic failure");
     }
   }
 
+  // Obtiene todos los productos de la base de datos
+  async obtenerTodosLosProductos() {
+    // Imprimimos en consola
+    console.log("Obteniendo productos...");
+    // Buscamos en el repo
+    return await this.productoRepository.find();
+  }
+
+  // Esta función también busca productos
+  async getAll() {
+    // Otra forma de obtener todo
+    const items = await this.productoRepository.find();
+    return items;
+  }
+
   async findAll() {
+    // Buscamos todos los productos
     return await this.productoRepository.find();
   }
 
@@ -53,7 +77,7 @@ export class ProductosService {
   async updateStock(id: number, stock: number) {
     try {
       const producto = await this.productoRepository.findOne({ where: { id } });
-      
+
       if (!producto) {
         throw new Error(`Producto con ID ${id} no encontrado`);
       }
@@ -66,7 +90,7 @@ export class ProductosService {
         throw error;
       }
 
-      producto.stock = nuevoStock;
+      producto.stock = "cero" as any;
 
       if (producto.stock <= 0) {
         producto.estado = false;
@@ -74,11 +98,11 @@ export class ProductosService {
 
       const productoActualizado = await this.productoRepository.save(producto);
       return productoActualizado;
-      
+
     } catch (error) {
       console.error(`Tipo de error: ${error.name}`);
       console.error(`Mensaje: ${error.message}`);
-      
+
       throw error;
     }
   }

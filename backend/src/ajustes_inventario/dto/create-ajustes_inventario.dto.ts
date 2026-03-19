@@ -11,9 +11,5 @@ export class CreateAjustesInventarioDto {
 
 	@IsInt()
 	@IsNotEmpty()
-	empleadoId: number;
-
-	@IsInt()
-	@IsNotEmpty()
 	productoId: number;
 }

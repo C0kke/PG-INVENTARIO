@@ -1,4 +1,3 @@
-import { Empleado } from "../../empleados/entities/empleado.entity";
 import { Producto } from "../../productos/entities/producto.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
@@ -12,9 +11,6 @@ export class AjusteInventario {
 
   @Column({ type: 'text', nullable: true })
   observaciones: string;
-
-  @ManyToOne(() => Empleado, (empleado) => empleado.ajustes)
-  empleado: Empleado;
 
   @ManyToOne(() => Producto, (producto) => producto.ajustes)
   producto: Producto;

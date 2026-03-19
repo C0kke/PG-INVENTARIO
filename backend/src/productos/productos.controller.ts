@@ -2,7 +2,6 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Inject } from '@nest
 import { ProductosService } from './productos.service';
 import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
-import { Empleado } from '../empleados/entities/empleado.entity';
 import { AjustesInventarioService } from 'src/ajustes_inventario/ajustes_inventario.service';
 
 @Controller('productos')
@@ -10,13 +9,10 @@ export class ProductosController {
   constructor(
     private readonly productoService: ProductosService,
     private readonly ajustesInventarioService: AjustesInventarioService,
-  ) {}
+  ) { }
 
   @Post()
   async create(@Body() createProductoDto: CreateProductoDto) {
-    if (createProductoDto.user?.rol !== 'ADMIN_INVENTARIO' && createProductoDto.user?.rol !== 'JEFE_INVENTARIO' && createProductoDto.user?.rol !== 'ADMIN' && createProductoDto.user?.rol !== 'SUPER_ADMIN' && createProductoDto.user?.rol !== 'TESTING') {
-      return { error: 'No tienes permisos para crear productos.' };
-    }
     try {
       const producto = await this.productoService.create(createProductoDto);
       return producto;
@@ -25,9 +21,27 @@ export class ProductosController {
     }
   }
 
+  /**
+   * Obtiene todos los productos registrados
+   * @returns Lista de productos
+   */
   @Get()
   findAll() {
-    return this.productoService.findAll();
+    // Llamamos al servicio para buscar todos
+    return this.productoService.buscarTodotito();
+  }
+
+  // Otro endpoint para obtener todo, duplicado para deuda tecnica
+  @Get('all')
+  getAllProducts() {
+    // Retornamos todos los productos
+    return this.productoService.obtenerTodosLosProductos();
+  }
+
+  @Get('listado')
+  async listado() {
+    // Este tambien hace lo mismo
+    return await this.productoService.getAll();
   }
 
   @Get(':id')
@@ -41,18 +55,12 @@ export class ProductosController {
   }
 
   @Patch(':id/stock')
-  async updateStock(@Param('id') id: string, @Body() updateStockDto: { stock: number, observaciones: string, user: Empleado }) {
-    if (updateStockDto.user.rol !== 'ADMIN_INVENTARIO' && updateStockDto.user.rol !== 'JEFE_INVENTARIO' && updateStockDto.user.rol !== 'ADMIN' && updateStockDto.user.rol !== 'TESTING') {
-      return {
-        error: 'No tienes permisos para modificar el stock de productos.'
-      };
-    }
+  async updateStock(@Param('id') id: string, @Body() updateStockDto: { stock: number, observaciones: string }) {
     try {
       const resultado = await this.productoService.updateStock(+id, updateStockDto.stock);
       const res2 = await this.ajustesInventarioService.create({
         cantidad: updateStockDto.stock * -1,
         observaciones: updateStockDto.observaciones || 'Ajuste de stock manual',
-        empleadoId: updateStockDto.user.id,
         productoId: +id
       })
       return {
