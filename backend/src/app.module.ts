@@ -7,7 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductosSinStockModule } from './productos_sin_stock/productos_sin_stock.module';
 // Módulos externos a inventario (ventas/compras/logística) removidos
 import { SolicitudProductoModule } from './solicitud_producto/solicitud_producto.module';
-
+x
 @Module({
   imports: [
     ConfigModule.forRoot({
